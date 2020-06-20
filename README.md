@@ -1,5 +1,5 @@
 # lyric_machine
-This program will create text wiles with lyrics for you taken from azlyrics.com
+This program will create text files with lyrics for you taken from azlyrics.com
 
 How to use? 
 Pass 2 arguments to get the lyrics desired. 
