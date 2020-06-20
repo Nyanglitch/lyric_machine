@@ -1,4 +1,5 @@
 import os
+import sys
 from sys import argv
 import urllib.error
 import urllib.request
@@ -7,14 +8,21 @@ import os.path
 from os import path
 
 
-# print("Pass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell")
-file, singer, song = argv
+if len(sys.argv) == 2 and sys.argv[1] == 'help':
+	print('Help: Pass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.')
+	exit()
+
+if len(sys.argv) == 3:
+	singer = sys.argv[1]
+	song = sys.argv[2]
+
+# file, singer, song = argv
 # singer = input("Singer: ")
 # song = input("Song name: ")
 
-if singer and song == 'help':
-	print('Help: Pass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.')
-	exit()
+# if len(sys.argv) < 3 and sys.argv[2] == 'help':
+# 	print('Help: Pass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.')
+# 	exit()
 
 # make a dir // check an existing dir
 
