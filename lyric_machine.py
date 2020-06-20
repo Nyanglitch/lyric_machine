@@ -15,7 +15,7 @@ error_arg3 = 'Not enough arguments. Try "help" once.'
 # exit error 1 // argument error
 # exit error 2 // connection error
 
-switches = ['n', 'y']
+switches = ['n', 'y', 'clear']
 quickswitch = 'u'
 
 if len(sys.argv) > 4:
@@ -26,7 +26,7 @@ else:
 		if sys.argv[3].lower() in switches:
 			singer = sys.argv[1]
 			song = sys.argv[2]
-			quickswitch = sys.argv[3]
+			quickswitch = sys.argv[3].lower()
 		else:
 			print(error_arg2)
 			exit(1)
@@ -37,7 +37,7 @@ else:
 		else:
 			if len(sys.argv) > 1:
 				if sys.argv[1] == 'help':
-					print('######## HELP ########\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\nYou may use QuickSave feature -- pass "n" or "y" as a third argument.')
+					print('\nWELCOME TO LYRIC MACHINE\n\n######## HELP ########\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\n\n###### SWITCHES ######\nUse them as a third argument:\nN for no-save, console output;\nY for save, console output;\nCLEAR for save, no console output.')
 					exit(0)
 				else:
 					print(error_arg3)
@@ -118,7 +118,6 @@ head = head3 + tail3
 # outputs
 
 clear_out_file.write(head)
-print(head + '\n')
 
 clear_out_file.close()
 out_file.close()
@@ -126,17 +125,22 @@ os.remove('messy_output.txt')
 
 # save or not?
 
+def output_print(output_switch):
+	if output_switch != 'clear':
+		print(head + '\n')
+
 def delete_output():
 	os.remove('lyric_machine/' + singer + ' -- ' + song_filename + '.txt')
 
 def switch_check(arg):
 	if arg == 'n':
 		delete_output()
-	elif arg == 'y':
+	elif arg in ['y', 'clear']:
 		exit(0)
 	else:
 		arg = input("Keep lyrics as a text file? (y/n): ").lower()
 		switch_check(arg)
 
+output_print(quickswitch)
 switch_check(quickswitch)
 
