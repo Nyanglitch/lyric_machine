@@ -7,32 +7,44 @@ from bs4 import BeautifulSoup
 import os.path
 from os import path
 
-if len(sys.argv) < 2:
-	print('No arguments passed. Try "help" argument.')
-	exit()
+error_arg1 = 'No arguments passed. Try "help" argument.'
+error_arg2 = 'Too many arguments. Try "help" once.'
+error_arg3 = 'Not enough arguments. Try "help" once.'
 
-if len(sys.argv) == 2 and sys.argv[1] == 'help':
-	print('..........HELP..........\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\nYou may use QuickSave feature -- pass "n" or "y" as a third argument.')
-	exit()
+# exit error 0 // all OK
+# exit error 1 // argument error
+# exit error 2 // connection error
 
 switches = ['n', 'y']
+quickswitch = 'u'
 
-if len(sys.argv) == 3:
-	singer = sys.argv[1]
-	song = sys.argv[2]
-
-if len(sys.argv) > 3:
-	singer = sys.argv[1]
-	song = sys.argv[2]
-	if sys.argv[3].lower() not in switches:
-		print('Too many arguments. Try "help" once.')
-		exit()
-	else: 
-		if len(sys.argv) > 4:
-			print('Too many arguments. Try "help" once.')
-			exit()
-		else:
+if len(sys.argv) > 4:
+	print(error_arg2)
+	exit(1)
+else:
+	if len(sys.argv) > 3:
+		if sys.argv[3].lower() in switches:
+			singer = sys.argv[1]
+			song = sys.argv[2]
 			quickswitch = sys.argv[3]
+		else:
+			print(error_arg2)
+			exit(1)
+	else:
+		if len(sys.argv) > 2:
+			singer = sys.argv[1]
+			song = sys.argv[2]
+		else:
+			if len(sys.argv) > 1:
+				if sys.argv[1] == 'help':
+					print('######## HELP ########\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\nYou may use QuickSave feature -- pass "n" or "y" as a third argument.')
+					exit(0)
+				else:
+					print(error_arg3)
+					exit(1)
+			else:
+				print(error_arg1)
+				exit(1)
 
 # make a dir // check an existing dir
 
@@ -42,8 +54,8 @@ if path.exists('lyric_machine') == False:
 # input formatting
 
 song_filename = song.replace('"', '')
-singer_clean = singer.replace(' ', '').replace("'", "").replace("/", "").replace('"', '').lower()
 song_clean = song_filename.replace(' ', '').replace("'", "").replace("/", "").lower()
+singer_clean = singer.replace(' ', '').replace("'", "").replace("/", "").replace('"', '').lower()
 
 # connections
 
@@ -87,16 +99,10 @@ out_file = open('messy_output.txt', 'w', encoding='utf8')
 out_file.write(text)
 out_file.close()
 
-# cleaning up the output
-
 out_file = open('messy_output.txt', 'r', encoding='utf8')
 clear_out_file = open('lyric_machine/' + singer + ' -- ' + song_filename + '.txt', 'w', encoding='utf8')
 
-whole_content = ''
-
-cont = out_file.readlines() 
-for i in range(0, len(cont)):
-	whole_content = whole_content + cont[i]
+whole_content = out_file.read()
 
 # cleanup
 
@@ -112,7 +118,7 @@ head = head3 + tail3
 # outputs
 
 clear_out_file.write(head)
-print(head)
+print(head + '\n')
 
 clear_out_file.close()
 out_file.close()
@@ -120,31 +126,17 @@ os.remove('messy_output.txt')
 
 # save or not?
 
-def save_submit():
-	save_or_not = input("Keep lyrics as a text file? (y/n): ").lower()
-	if save_or_not == 'n':
-		os.remove('lyric_machine/' + singer + ' -- ' + song_filename + '.txt')
-	elif save_or_not == 'y':
-		exit()
-	elif save_or_not == 'u so cool!':
-		print('Aww! Thank you!')
-		save_submit()
+def delete_output():
+	os.remove('lyric_machine/' + singer + ' -- ' + song_filename + '.txt')
+
+def switch_check(arg):
+	if arg == 'n':
+		delete_output()
+	elif arg == 'y':
+		exit(0)
 	else:
-		print("Letter not supported.")
-		save_submit()
+		arg = input("Keep lyrics as a text file? (y/n): ").lower()
+		switch_check(arg)
 
-def quick_save():
-	if quickswitch.lower() == 'n':
-		os.remove('lyric_machine/' + singer + ' -- ' + song_filename + '.txt')
-	elif quickswitch.lower() == 'y':
-		exit()
-	else:
-		print("Quicksave crashed, letter not supported.")
-		save_submit()
-
-if len(sys.argv) < 4:
-	save_submit()
-else:
-	quick_save()
-
+switch_check(quickswitch)
 
