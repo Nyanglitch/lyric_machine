@@ -83,14 +83,14 @@ text = '\n'.join(chunk for chunk in chunks if chunk)
 
 # adding everything to the text file
 
-out_file = open('messy_output.txt', 'w')
+out_file = open('messy_output.txt', 'w', encoding='utf8')
 out_file.write(text)
 out_file.close()
 
 # cleaning up the output
 
-out_file = open('messy_output.txt', 'r')
-clear_out_file = open('lyric_machine/' + singer + ' -- ' + song_filename + '.txt', 'w')
+out_file = open('messy_output.txt', 'r', encoding='utf8')
+clear_out_file = open('lyric_machine/' + singer + ' -- ' + song_filename + '.txt', 'w', encoding='utf8')
 
 whole_content = ''
 
