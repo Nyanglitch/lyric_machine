@@ -12,42 +12,36 @@ if len(sys.argv) < 2:
 	exit()
 
 if len(sys.argv) == 2 and sys.argv[1] == 'help':
-	print('Help: Pass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.')
+	print('..........HELP..........\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\nYou may use QuickSave feature -- pass "n" or "y" as a third argument.')
 	exit()
+
+switches = ['n', 'y']
 
 if len(sys.argv) == 3:
 	singer = sys.argv[1]
 	song = sys.argv[2]
 
 if len(sys.argv) > 3:
-	print('Too many arguments. Try "help" once.')
-	exit()
-
-# file, singer, song = argv
-# singer = input("Singer: ")
-# song = input("Song name: ")
-
-# if len(sys.argv) < 3 and sys.argv[2] == 'help':
-# 	print('Help: Pass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.')
-# 	exit()
+	singer = sys.argv[1]
+	song = sys.argv[2]
+	if sys.argv[3].lower() not in switches:
+		print('Too many arguments. Try "help" once.')
+		exit()
+	else: 
+		quickswitch = sys.argv[3]
 
 # make a dir // check an existing dir
 
 if path.exists('lyric_machine') == False:
 	os.mkdir("lyric_machine")
 
-# maybe make it a function?
+# input formatting
 
-singer_clean = singer.lower()
-singer_clean = singer_clean.replace(' ', '')
-singer_clean = singer_clean.replace("'", "")
-singer_clean = singer_clean.replace("/", "")
-song_clean = song.replace(' ', '')
-song_clean = song_clean.replace('"', '')
-song_clean = song_clean.replace("'", "")
-song_clean = song_clean.lower()
-# song_filename = song.replace(' ', '_')
+singer_clean = singer.replace(' ', '').replace("'", "").replace("/", "").replace('"', '').lower()
+song_clean = song.replace('"', '').replace(' ', '').replace("'", "").replace("/", "").lower()
 song_filename = song.replace('"', '')
+
+# connections
 
 url = 'https://www.azlyrics.com/lyrics/' + singer_clean + '/' + song_clean + '.html'
 
@@ -64,8 +58,8 @@ except urllib.error.URLError as e:
 else:
     html = urllib.request.urlopen(url).read()
 
-
-
+# beautifulsoup stuff
+#####################
 soup = BeautifulSoup(html, 'html.parser')
 
 # kill all script and style elements
@@ -81,7 +75,7 @@ lines = (line.strip() for line in text.splitlines())
 chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
 # drop blank lines
 text = '\n'.join(chunk for chunk in chunks if chunk)
-
+#####################
 
 # adding everything to the text file
 
@@ -108,8 +102,10 @@ for i in range(0, len(cont)):
 head, sep, tail = whole_content.partition('Submit Corrections')
 clear_out_file.write(head)
 
+# this should be changed
 remove_lyrics = " Lyrics"
 head = head.replace(remove_lyrics, '')
+########################
 
 print(head)
 
@@ -132,4 +128,18 @@ def save_submit():
 		print("Letter not supported.")
 		save_submit()
 
-save_submit()
+def quick_save():
+	if quickswitch.lower() == 'n':
+		os.remove('lyric_machine/' + singer + ' -- ' + song_filename + '.txt')
+	elif quickswitch.lower() == 'y':
+		exit()
+	else:
+		print("Quicksave crashed, letter not supported.")
+		save_submit()
+
+if len(sys.argv) < 4:
+	save_submit()
+else:
+	quick_save()
+
+
