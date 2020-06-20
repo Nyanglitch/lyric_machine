@@ -7,6 +7,9 @@ from bs4 import BeautifulSoup
 import os.path
 from os import path
 
+if len(sys.argv) < 2:
+	print('No arguments passed. Try "help" argument.')
+	exit()
 
 if len(sys.argv) == 2 and sys.argv[1] == 'help':
 	print('Help: Pass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.')
@@ -15,6 +18,10 @@ if len(sys.argv) == 2 and sys.argv[1] == 'help':
 if len(sys.argv) == 3:
 	singer = sys.argv[1]
 	song = sys.argv[2]
+
+if len(sys.argv) > 3:
+	print('Too many arguments. Try "help" once.')
+	exit()
 
 # file, singer, song = argv
 # singer = input("Singer: ")
