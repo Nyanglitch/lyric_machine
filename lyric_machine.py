@@ -95,22 +95,23 @@ clear_out_file = open('lyric_machine/' + singer + ' -- ' + song_filename + '.txt
 whole_content = ''
 
 cont = out_file.readlines() 
-for i in range(0, len(cont)): 
-    if(i in range(0, 30)):
-        pass
-    else: 
-        whole_content = whole_content + cont[i]
+for i in range(0, len(cont)):
+	whole_content = whole_content + cont[i]
 
 # cleanup
 
-head, sep, tail = whole_content.partition('Submit Corrections')
+head2, sep2, tail2 = whole_content.partition('" lyrics\n')
+head, sep, tail = tail2.partition('\nSubmit Corrections')
+
+# unwanted word removal
+head3, sep3, tail3 = head.partition(' Lyrics')
+
+# concatenation to get clear output
+head = head3 + tail3
+
+# outputs
+
 clear_out_file.write(head)
-
-# this should be changed
-remove_lyrics = " Lyrics"
-head = head.replace(remove_lyrics, '')
-########################
-
 print(head)
 
 clear_out_file.close()
