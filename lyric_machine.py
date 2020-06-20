@@ -28,7 +28,11 @@ if len(sys.argv) > 3:
 		print('Too many arguments. Try "help" once.')
 		exit()
 	else: 
-		quickswitch = sys.argv[3]
+		if len(sys.argv) > 4:
+			print('Too many arguments. Try "help" once.')
+			exit()
+		else:
+			quickswitch = sys.argv[3]
 
 # make a dir // check an existing dir
 
@@ -37,9 +41,9 @@ if path.exists('lyric_machine') == False:
 
 # input formatting
 
-singer_clean = singer.replace(' ', '').replace("'", "").replace("/", "").replace('"', '').lower()
-song_clean = song.replace('"', '').replace(' ', '').replace("'", "").replace("/", "").lower()
 song_filename = song.replace('"', '')
+singer_clean = singer.replace(' ', '').replace("'", "").replace("/", "").replace('"', '').lower()
+song_clean = song_filename.replace(' ', '').replace("'", "").replace("/", "").lower()
 
 # connections
 
