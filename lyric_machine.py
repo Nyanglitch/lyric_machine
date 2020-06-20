@@ -66,11 +66,11 @@ try:
 except urllib.error.HTTPError as e:
     print('HTTPError: {}'.format(e.code))
     print('Page does not exist. Try different input or different song :(')
-    exit()
+    exit(2)
 except urllib.error.URLError as e:
     print('URLError: {}'.format(e.reason))
     print('Page does not exist. Try different input or different song :(')
-    exit()
+    exit(2)
 else:
     html = urllib.request.urlopen(url).read()
 
