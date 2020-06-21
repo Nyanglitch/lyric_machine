@@ -11,12 +11,13 @@ import re
 error_arg1 = 'No arguments passed. Try "help" argument.'
 error_arg2 = 'Too many arguments. Try "help" once.'
 error_arg3 = 'Not enough arguments. Try "help" once.'
+error_arg4 = 'Page does not exist. Try different input or different song :('
 
 # exit error 0 // all OK
 # exit error 1 // argument error
 # exit error 2 // connection error
 
-switches = ['n', 'y', 'clear']
+switches = ('n', 'y', 'clear')
 quickswitch = 'u'
 
 if len(sys.argv) > 4:
@@ -56,8 +57,8 @@ if path.exists('lyric_machine') == False:
 
 song_filename = song.replace('"', '')
 singer_filename = singer.replace('"', '')
-song_clean = re.sub("[^a-z0-9A-Z]", '', song_filename).replace(" ", '').lower()
-singer_clean = re.sub("[^a-z0-9A-Z]", '', singer_filename).replace(" ", '').lower()
+song_clean = re.sub("[^a-z0-9A-Z]", '', song_filename).lower()
+singer_clean = re.sub("[^a-z0-9A-Z]", '', singer_filename).lower()
 
 # the path concatenation
 
@@ -92,11 +93,11 @@ try:
     conn = urllib.request.urlopen(url)
 except urllib.error.HTTPError as e:
     print('HTTPError: {}'.format(e.code))
-    print('Page does not exist. Try different input or different song :(')
+    print(error_arg4)
     exit(2)
 except urllib.error.URLError as e:
     print('URLError: {}'.format(e.reason))
-    print('Page does not exist. Try different input or different song :(')
+    print(error_arg4)
     exit(2)
 else:
     html = urllib.request.urlopen(url).read()
@@ -120,35 +121,19 @@ chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
 text = '\n'.join(chunk for chunk in chunks if chunk)
 #####################
 
-# adding everything to the text file
-
-out_file = open('messy_output.txt', 'w', encoding='utf8')
-out_file.write(text)
-out_file.close()
-
-out_file = open('messy_output.txt', 'r', encoding='utf8')
-clear_out_file = open(the_lyric_path, 'w', encoding='utf8')
-
-whole_content = out_file.read()
-
 # cleanup
 
-head2, sep2, tail2 = whole_content.partition('" lyrics\n')
+head2, sep2, tail2 = text.partition('" lyrics\n')
 head, sep, tail = tail2.partition('\nSubmit Corrections')
-
 # unwanted word removal
 head3, sep3, tail3 = head.partition(' Lyrics')
-
 # concatenation to get clear output
 head = head3 + tail3
 
-# outputs
+# writing clear output to the text file
 
-clear_out_file.write(head)
-
-clear_out_file.close()
-out_file.close()
-os.remove('messy_output.txt')
+with open(the_lyric_path, 'w', encoding='utf8') as clear_out_file:
+	clear_out_file.write(head)
 
 # save or not?
 
@@ -159,6 +144,10 @@ def output_print(output_switch):
 def delete_output():
 	os.remove(the_lyric_path)
 
+def switch_ask():
+	quickswitch = input("Keep lyrics as a text file? (y/n): ").lower()
+	switch_check(quickswitch)
+
 def switch_check(arg):
 	if arg == 'n':
 		delete_output()
@@ -166,8 +155,7 @@ def switch_check(arg):
 	elif arg in ['y', 'clear']:
 		exit(0)
 	else:
-		arg = input("Keep lyrics as a text file? (y/n): ").lower()
-		switch_check(arg)
+		switch_ask()
 
 output_print(quickswitch)
 switch_check(quickswitch)
