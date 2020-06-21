@@ -56,8 +56,8 @@ if path.exists('lyric_machine') == False:
 
 song_filename = song.replace('"', '')
 singer_filename = singer.replace('"', '')
-song_clean = re.sub('^[a-z]', '', song_filename).replace(" ", '').lower()
-singer_clean = re.sub("^[a-z]", '', singer).replace(" ", '').lower()
+song_clean = re.sub("[^a-z0-9]", '', song_filename).replace(" ", '').lower()
+singer_clean = re.sub("[^a-z0-9]", '', singer_filename).replace(" ", '').lower()
 
 # the path concatenation
 
