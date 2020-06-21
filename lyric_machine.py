@@ -6,6 +6,7 @@ import urllib.request
 from bs4 import BeautifulSoup
 import os.path
 from os import path
+import re
 
 error_arg1 = 'No arguments passed. Try "help" argument.'
 error_arg2 = 'Too many arguments. Try "help" once.'
@@ -54,8 +55,22 @@ if path.exists('lyric_machine') == False:
 # input formatting
 
 song_filename = song.replace('"', '')
-song_clean = song_filename.replace(' ', '').replace("'", "").replace("/", "").lower()
-singer_clean = singer.replace(' ', '').replace("'", "").replace("/", "").replace('"', '').lower()
+singer_filename = singer.replace('"', '')
+song_clean = re.sub('^[a-z]', '', song_filename).replace(" ", '').lower()
+singer_clean = re.sub("^[a-z]", '', singer).replace(" ", '').lower()
+
+# sync
+
+def sync_function():
+	for i in range():
+		pass # sync algorithm here
+
+def sync_check(sync_switch):
+	if sync_switch == 'sync':
+		sync_function()
+
+
+sync_check(quickswitch)
 
 # connections
 
@@ -100,7 +115,7 @@ out_file.write(text)
 out_file.close()
 
 out_file = open('messy_output.txt', 'r', encoding='utf8')
-clear_out_file = open('lyric_machine/' + singer + ' -- ' + song_filename + '.txt', 'w', encoding='utf8')
+clear_out_file = open('lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt', 'w', encoding='utf8')
 
 whole_content = out_file.read()
 
@@ -127,14 +142,15 @@ os.remove('messy_output.txt')
 
 def output_print(output_switch):
 	if output_switch != 'clear':
-		print(head + '\n')
+		print(head)
 
 def delete_output():
-	os.remove('lyric_machine/' + singer + ' -- ' + song_filename + '.txt')
+	os.remove('lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt')
 
 def switch_check(arg):
 	if arg == 'n':
 		delete_output()
+		exit(0)
 	elif arg in ['y', 'clear']:
 		exit(0)
 	else:
@@ -144,3 +160,4 @@ def switch_check(arg):
 output_print(quickswitch)
 switch_check(quickswitch)
 
+exit(0)
