@@ -59,6 +59,18 @@ singer_filename = singer.replace('"', '')
 song_clean = re.sub('^[a-z]', '', song_filename).replace(" ", '').lower()
 singer_clean = re.sub("^[a-z]", '', singer).replace(" ", '').lower()
 
+# the path concatenation
+
+the_lyric_path = 'lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt'
+
+# lyrics were saved previously? type it out and exit
+
+if path.exists(the_lyric_path) == True:
+	with open(the_lyric_path, 'r') as f:
+		data = f.read()
+		print(data)
+		exit(0)
+
 # sync
 
 def sync_function():
@@ -115,7 +127,7 @@ out_file.write(text)
 out_file.close()
 
 out_file = open('messy_output.txt', 'r', encoding='utf8')
-clear_out_file = open('lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt', 'w', encoding='utf8')
+clear_out_file = open(the_lyric_path, 'w', encoding='utf8')
 
 whole_content = out_file.read()
 
@@ -145,7 +157,7 @@ def output_print(output_switch):
 		print(head)
 
 def delete_output():
-	os.remove('lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt')
+	os.remove(the_lyric_path)
 
 def switch_check(arg):
 	if arg == 'n':
