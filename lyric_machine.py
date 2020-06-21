@@ -6,7 +6,6 @@ import urllib.request
 from bs4 import BeautifulSoup
 import os.path
 from os import path
-import re
 
 error_arg1 = 'No arguments passed. Try "help" argument.'
 error_arg2 = 'Too many arguments. Try "help" once.'
@@ -56,8 +55,8 @@ if path.exists('lyric_machine') == False:
 
 song_filename = song.replace('"', '')
 singer_filename = singer.replace('"', '')
-song_clean = re.sub("[^a-z0-9]", '', song_filename).replace(" ", '').lower()
-singer_clean = re.sub("[^a-z0-9]", '', singer_filename).replace(" ", '').lower()
+song_clean = ''.join(e for e in song_filename if e.isalnum()).lower()
+singer_clean = ''.join(e for e in singer_filename if e.isalnum()).lower()
 
 # the path concatenation
 
