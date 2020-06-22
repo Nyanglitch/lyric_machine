@@ -144,9 +144,10 @@ def output_print(output_switch):
 def delete_output():
 	os.remove(the_lyric_path)
 
-def switch_ask():
-	quickswitch = input("Keep lyrics as a text file? (y/n): ").lower()
-	switch_check(quickswitch)
+def switch_ask(arg):
+	while arg not in ['y', 'n']:
+		arg = input("Keep lyrics as a text file? (y/n): ").lower()
+	switch_check(arg)
 
 def switch_check(arg):
 	if arg == 'n':
@@ -155,7 +156,7 @@ def switch_check(arg):
 	elif arg in ['y', 'clear']:
 		exit(0)
 	else:
-		switch_ask()
+		switch_ask(arg)
 
 output_print(quickswitch)
 switch_check(quickswitch)
