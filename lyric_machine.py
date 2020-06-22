@@ -130,35 +130,29 @@ head3, sep3, tail3 = head.partition(' Lyrics')
 # concatenation to get clear output
 head = head3 + tail3
 
-# writing clear output to the text file
-
-with open(the_lyric_path, 'w', encoding='utf8') as clear_out_file:
-	clear_out_file.write(head)
-
 # save or not?
 
 def output_print(output_switch):
 	if output_switch != 'clear':
 		print(head)
 
-def delete_output():
-	os.remove(the_lyric_path)
+def keep_output():
+	with open(the_lyric_path, 'w', encoding='utf8') as clear_out_file:
+		clear_out_file.write(head)
 
 def switch_ask(arg):
-	while arg not in ['y', 'n']:
+	while arg not in switches:
 		arg = input("Keep lyrics as a text file? (y/n): ").lower()
 	switch_check(arg)
 
 def switch_check(arg):
-	if arg == 'n':
-		delete_output()
-		exit(0)
-	elif arg in ['y', 'clear']:
+	if arg != 'n':
+		keep_output()
 		exit(0)
 	else:
-		switch_ask(arg)
+		exit(0)
 
 output_print(quickswitch)
-switch_check(quickswitch)
+switch_ask(quickswitch)
 
 exit(0)
