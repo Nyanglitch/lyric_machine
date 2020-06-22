@@ -19,6 +19,122 @@ error_arg4 = 'Page does not exist. Try different input or different song :('
 
 switches = ('n', 'y', 'clear')
 quickswitch = 'u'
+the_packet = 'u'
+
+# make a dir // check an existing dir
+
+if path.exists('lyric_machine') == False:
+	os.mkdir("lyric_machine")
+
+# the algorithm
+
+def the_big_function(singer, song):
+	global quickswitch, error_arg1, error_arg2, error_arg3, error_arg4
+
+	# input formatting
+	song_filename = song.replace('"', '')
+	singer_filename = singer.replace('"', '')
+	song_clean = re.sub("[^a-z0-9A-Z]", '', song_filename).lower()
+	singer_clean = re.sub("[^a-z0-9A-Z]", '', singer_filename).lower()
+
+	# the path concatenation
+
+	the_lyric_path = 'lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt'
+
+	# lyrics were saved previously? type it out and exit
+
+	# if path.exists(the_lyric_path) == True:
+	# 	with open(the_lyric_path, 'r') as f:
+	# 		data = f.read()
+	# 		print(data)
+	# 		exit(0)
+
+	# sync
+
+	# def sync_function():
+	# 	for i in range():
+	# 		pass # sync algorithm here
+
+	# def sync_check(sync_switch):
+	# 	if sync_switch == 'sync':
+	# 		sync_function()
+
+
+	# sync_check(quickswitch)
+
+	# connections
+
+	url = 'https://www.azlyrics.com/lyrics/' + singer_clean + '/' + song_clean + '.html'
+
+	try:
+	    conn = urllib.request.urlopen(url)
+	except urllib.error.HTTPError as e:
+	    print('HTTPError: {}'.format(e.code))
+	    print(error_arg4)
+	    exit(2)
+	except urllib.error.URLError as e:
+	    print('URLError: {}'.format(e.reason))
+	    print(error_arg4)
+	    exit(2)
+	else:
+	    html = urllib.request.urlopen(url).read()
+
+	# beautifulsoup stuff
+	#####################
+	soup = BeautifulSoup(html, 'html.parser')
+
+	# kill all script and style elements
+	for script in soup(["script", "style"]):
+	    script.extract()    # rip it out
+
+	# get text
+	text = soup.get_text()
+
+	# break into lines and remove leading and trailing space on each
+	lines = (line.strip() for line in text.splitlines())
+	# break multi-headlines into a line each
+	chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+	# drop blank lines
+	text = '\n'.join(chunk for chunk in chunks if chunk)
+	#####################
+
+	# cleanup
+
+	head2, sep2, tail2 = text.partition('" lyrics\n')
+	head, sep, tail = tail2.partition('\nSubmit Corrections')
+	# unwanted word removal
+	head3, sep3, tail3 = head.partition(' Lyrics')
+	# concatenation to get clear output
+	head = head3 + tail3
+
+	# save or not?
+
+	def output_print(output_switch):
+		if output_switch != 'clear':
+			print(head)
+
+	def keep_output():
+		with open(the_lyric_path, 'w', encoding='utf8') as clear_out_file:
+			clear_out_file.write(head)
+
+	def switch_ask(arg):
+		while arg not in switches:
+			arg = input("Keep lyrics as a text file? (y/n): ").lower()
+		switch_check(arg)
+
+	def switch_check(arg):
+		if arg != 'n':
+			keep_output()
+			exit(0)
+		else:
+			exit(0)
+
+	if quickswitch == 'clear':
+		keep_output()
+	else:
+		output_print(quickswitch)
+		switch_ask(quickswitch)
+
 
 if len(sys.argv) > 4:
 	print(error_arg2)
@@ -29,17 +145,23 @@ else:
 			singer = sys.argv[1]
 			song = sys.argv[2]
 			quickswitch = sys.argv[3].lower()
+			the_big_function(singer, song)
 		else:
 			print(error_arg2)
 			exit(1)
 	else:
 		if len(sys.argv) > 2:
-			singer = sys.argv[1]
-			song = sys.argv[2]
+			if sys.argv[1].lower() == 'package.txt' and sys.argv[2].lower() == 'package':
+				the_packet = sys.argv[1]
+				quickswitch = 'clear'
+			else:
+				singer = sys.argv[1]
+				song = sys.argv[2]
+				the_big_function(singer, song)
 		else:
 			if len(sys.argv) > 1:
 				if sys.argv[1] == 'help':
-					print('\nWELCOME TO LYRIC MACHINE\n\n######## HELP ########\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\n\n###### SWITCHES ######\nUse them as a third argument:\nN for no-save, console output;\nY for save, console output;\nCLEAR for save, no console output.')
+					print('\nWELCOME TO LYRIC MACHINE\n\n######## HELP ########\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\n\n###### SWITCHES ######\nUse them as a third argument:\nN for no-save, console output;\nY for save, console output;\nCLEAR for save, no console output;\n\n###### PACKAGE #######\nPacket lyrics download now supported.\nAdd "package.txt" file in current directory with desired names.\nExample of package.txt file:\n\nacdc highwaytohell\nkamelot centeroftheuniverse\n\nExecution: "package.txt" packet\nNOTE: package feature uses CLEAR switch. Do not include switches in package.txt file.')
 					exit(0)
 				else:
 					print(error_arg3)
@@ -48,111 +170,13 @@ else:
 				print(error_arg1)
 				exit(1)
 
-# make a dir // check an existing dir
+# unpack package to extract singer and song
 
-if path.exists('lyric_machine') == False:
-	os.mkdir("lyric_machine")
-
-# input formatting
-
-song_filename = song.replace('"', '')
-singer_filename = singer.replace('"', '')
-song_clean = re.sub("[^a-z0-9A-Z]", '', song_filename).lower()
-singer_clean = re.sub("[^a-z0-9A-Z]", '', singer_filename).lower()
-
-# the path concatenation
-
-the_lyric_path = 'lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt'
-
-# lyrics were saved previously? type it out and exit
-
-if path.exists(the_lyric_path) == True:
-	with open(the_lyric_path, 'r') as f:
-		data = f.read()
-		print(data)
-		exit(0)
-
-# sync
-
-def sync_function():
-	for i in range():
-		pass # sync algorithm here
-
-def sync_check(sync_switch):
-	if sync_switch == 'sync':
-		sync_function()
-
-
-sync_check(quickswitch)
-
-# connections
-
-url = 'https://www.azlyrics.com/lyrics/' + singer_clean + '/' + song_clean + '.html'
-
-try:
-    conn = urllib.request.urlopen(url)
-except urllib.error.HTTPError as e:
-    print('HTTPError: {}'.format(e.code))
-    print(error_arg4)
-    exit(2)
-except urllib.error.URLError as e:
-    print('URLError: {}'.format(e.reason))
-    print(error_arg4)
-    exit(2)
-else:
-    html = urllib.request.urlopen(url).read()
-
-# beautifulsoup stuff
-#####################
-soup = BeautifulSoup(html, 'html.parser')
-
-# kill all script and style elements
-for script in soup(["script", "style"]):
-    script.extract()    # rip it out
-
-# get text
-text = soup.get_text()
-
-# break into lines and remove leading and trailing space on each
-lines = (line.strip() for line in text.splitlines())
-# break multi-headlines into a line each
-chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-# drop blank lines
-text = '\n'.join(chunk for chunk in chunks if chunk)
-#####################
-
-# cleanup
-
-head2, sep2, tail2 = text.partition('" lyrics\n')
-head, sep, tail = tail2.partition('\nSubmit Corrections')
-# unwanted word removal
-head3, sep3, tail3 = head.partition(' Lyrics')
-# concatenation to get clear output
-head = head3 + tail3
-
-# save or not?
-
-def output_print(output_switch):
-	if output_switch != 'clear':
-		print(head)
-
-def keep_output():
-	with open(the_lyric_path, 'w', encoding='utf8') as clear_out_file:
-		clear_out_file.write(head)
-
-def switch_ask(arg):
-	while arg not in switches:
-		arg = input("Keep lyrics as a text file? (y/n): ").lower()
-	switch_check(arg)
-
-def switch_check(arg):
-	if arg != 'n':
-		keep_output()
-		exit(0)
-	else:
-		exit(0)
-
-output_print(quickswitch)
-switch_ask(quickswitch)
-
-exit(0)
+if the_packet != 'u':
+	with open(the_packet, 'r', encoding='utf8') as p:
+		cont = p.readlines()
+		for i in range(0, len(cont)):
+			raw_string = cont[i]
+			singer, sep, tail = raw_string.partition(' ')
+			song, sep2, tail2 = tail.partition('\n')
+			the_big_function(singer, song)
