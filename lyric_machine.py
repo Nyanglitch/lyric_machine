@@ -126,8 +126,6 @@ def the_big_function(singer, song):
 		if arg != 'n':
 			keep_output()
 			exit(0)
-		else:
-			exit(0)
 
 	if quickswitch == 'clear':
 		keep_output()
@@ -180,3 +178,4 @@ if the_packet != 'u':
 			singer, sep, tail = raw_string.partition(' ')
 			song, sep2, tail2 = tail.partition('\n')
 			the_big_function(singer, song)
+	print("Download Complete.")
