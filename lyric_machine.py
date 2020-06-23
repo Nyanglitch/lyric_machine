@@ -32,35 +32,25 @@ def the_big_function(singer, song):
 	global quickswitch, error_arg1, error_arg2, error_arg3, error_arg4
 
 	# input formatting
-	song_filename = song.replace('"', '')
-	singer_filename = singer.replace('"', '')
-	song_clean = re.sub("[^a-z0-9A-Z]", '', song_filename).lower()
-	singer_clean = re.sub("[^a-z0-9A-Z]", '', singer_filename).lower()
+	# song_filename = song.replace('"', '')
+	# singer_filename = singer.replace('"', '')
+	song_clean = re.sub("[^a-z0-9A-Z]", '', song).lower()
+	singer_clean = re.sub("[^a-z0-9A-Z]", '', singer).lower()
 
 	# the path concatenation
 
-	the_lyric_path = 'lyric_machine/' + singer_filename + ' -- ' + song_filename + '.txt'
+	the_lyric_path = 'lyric_machine/' + singer_clean + ' -- ' + song_clean + '.txt'
 
 	# lyrics were saved previously? type it out and exit
-
-	# if path.exists(the_lyric_path) == True:
-	# 	with open(the_lyric_path, 'r') as f:
-	# 		data = f.read()
-	# 		print(data)
-	# 		exit(0)
-
-	# sync
-
-	# def sync_function():
-	# 	for i in range():
-	# 		pass # sync algorithm here
-
-	# def sync_check(sync_switch):
-	# 	if sync_switch == 'sync':
-	# 		sync_function()
-
-
-	# sync_check(quickswitch)
+	if path.exists(the_lyric_path) == True:
+		if quickswitch != 'packet':
+			with open(the_lyric_path, 'r') as f:
+				data = f.read()
+				print(data)
+				exit(0)
+		else:
+			print("Lyrics file already exists.")
+			return
 
 	# connections
 
@@ -70,12 +60,21 @@ def the_big_function(singer, song):
 	    conn = urllib.request.urlopen(url)
 	except urllib.error.HTTPError as e:
 	    print('HTTPError: {}'.format(e.code))
+	    print(singer, song)
 	    print(error_arg4)
-	    exit(2)
+	    if quickswitch != 'packet':
+	    	exit(2)
+	    else:
+	    	return
+		    
 	except urllib.error.URLError as e:
 	    print('URLError: {}'.format(e.reason))
+	    print(singer, song)
 	    print(error_arg4)
-	    exit(2)
+	    if quickswitch != 'packet':
+	    	exit(2)
+	    else:
+	    	return
 	else:
 	    html = urllib.request.urlopen(url).read()
 
@@ -127,18 +126,41 @@ def the_big_function(singer, song):
 			keep_output()
 			exit(0)
 
-	if quickswitch == 'clear':
+	if quickswitch == 'packet':
 		keep_output()
 	else:
 		output_print(quickswitch)
 		switch_ask(quickswitch)
 
 
-if len(sys.argv) > 4:
+def flag_eliminator(arg):
+	n1, n2, n3 = arg.partition(" ")
+	n4, n5, n6 = n3.partition(" ")
+	new_line = n1 + n2 + n4
+	return new_line
+
+def packet_creator():
+	all_lines = 'ignore'
+	new_line = ''
+	while True:
+		new_line = flag_eliminator(input("Pass singer and song: "))
+		if new_line != 'done':
+			if all_lines == 'ignore':
+				all_lines = new_line
+			else:
+				all_lines = all_lines + '\n' + new_line
+		else:
+			with open('packet.txt', 'w', encoding='utf8') as p:
+				p.write(all_lines)
+			exit(0)
+
+
+
+if len(sys.argv) > 4: # 5 up
 	print(error_arg2)
 	exit(1)
 else:
-	if len(sys.argv) > 3:
+	if len(sys.argv) > 3: # 4 args
 		if sys.argv[3].lower() in switches:
 			singer = sys.argv[1]
 			song = sys.argv[2]
@@ -148,33 +170,35 @@ else:
 			print(error_arg2)
 			exit(1)
 	else:
-		if len(sys.argv) > 2:
-			if sys.argv[1].lower() == 'package.txt' and sys.argv[2].lower() == 'package':
-				the_packet = sys.argv[1]
-				quickswitch = 'clear'
+		if len(sys.argv) > 2: # 3 args
+			if sys.argv[1].lower() == 'packet.txt' and sys.argv[2].lower() == 'packet':
+				the_packet = 'packet.txt'
+				quickswitch = 'packet'
 			else:
 				singer = sys.argv[1]
 				song = sys.argv[2]
 				the_big_function(singer, song)
 		else:
-			if len(sys.argv) > 1:
+			if len(sys.argv) > 1: # 2 args
 				if sys.argv[1] == 'help':
-					print('\nWELCOME TO LYRIC MACHINE\n\n######## HELP ########\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\n\n###### SWITCHES ######\nUse them as a third argument:\nN for no-save, console output;\nY for save, console output;\nCLEAR for save, no console output;\n\n###### PACKAGE #######\nPacket lyrics download now supported.\nAdd "package.txt" file in current directory with desired names.\nExample of package.txt file:\n\nacdc highwaytohell\nkamelot centeroftheuniverse\n\nExecution: "package.txt" packet\nNOTE: package feature uses CLEAR switch. Do not include switches in package.txt file.')
+					print('\nWELCOME TO LYRIC MACHINE\n\n######## HELP ########\nPass singer and song name. You may use quotes (if name contains spaces), apostrophes, and any case.\nPerfect example if in doubt: acdc highwaytohell\nThe program will make a separate folder in your current directory for outputs.\n\n###### SWITCHES ######\nUse them as a third argument:\nN for no-save, console output;\nY for save, console output;\nCLEAR for save, no console output;\n\n####### PACKET #######\nPacket lyrics download now supported.\nAdd "packet.txt" file in current directory with desired names.\nYou can create packet.txt by passing "packet" as an only argument -- once done type "done".\nExample of packet.txt file:\n\nacdc highwaytohell\nkamelot centeroftheuniverse\n\nExecution: "packet.txt" packet\nNOTE: packet feature uses CLEAR switch. All included switches will be eliminated.\nNOTE: Do not include any spaces in the names of song or singer in packet.txt')
 					exit(0)
+				elif sys.argv[1] == 'packet':
+					packet_creator()
 				else:
 					print(error_arg3)
 					exit(1)
-			else:
+			else: # 1 arg (program only)
 				print(error_arg1)
 				exit(1)
 
-# unpack package to extract singer and song
+# unpack packet to extract singer and song
 
 if the_packet != 'u':
 	with open(the_packet, 'r', encoding='utf8') as p:
 		cont = p.readlines()
 		for i in range(0, len(cont)):
-			raw_string = cont[i]
+			raw_string = flag_eliminator(cont[i])
 			singer, sep, tail = raw_string.partition(' ')
 			song, sep2, tail2 = tail.partition('\n')
 			the_big_function(singer, song)
