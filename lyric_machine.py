@@ -38,7 +38,8 @@ def the_big_function(singer, song):
 	singer_clean = re.sub("[^a-z0-9A-Z]", '', singer).lower()
 
 	if path.exists('lyric_machine/' + singer_clean) == False:
-		os.mkdir("lyric_machine/" + singer_clean)
+		if quickswitch != 'n':
+			os.mkdir("lyric_machine/" + singer_clean)
 
 	# the path concatenation
 
