@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import os.path
 from os import path
 import re
+import genius_test
 
 error_arg1 = 'No arguments passed. Try "help" argument.'
 error_arg2 = 'Too many arguments. Try "help" once.'
@@ -32,8 +33,7 @@ def the_big_function(singer, song):
 	global quickswitch, error_arg1, error_arg2, error_arg3, error_arg4
 
 	# input formatting
-	# song_filename = song.replace('"', '')
-	# singer_filename = singer.replace('"', '')
+
 	song_clean = re.sub("[^a-z0-9A-Z]", '', song).lower()
 	singer_clean = re.sub("[^a-z0-9A-Z]", '', singer).lower()
 
@@ -65,7 +65,8 @@ def the_big_function(singer, song):
 	except urllib.error.HTTPError as e:
 	    print('HTTPError: {}'.format(e.code))
 	    print(singer, song)
-	    print(error_arg4)
+	    print("Page not found. Trying genius.com now....")
+	    genius_test(singer, song)
 	    if quickswitch != 'packet':
 	    	exit(2)
 	    else:
@@ -74,7 +75,8 @@ def the_big_function(singer, song):
 	except urllib.error.URLError as e:
 	    print('URLError: {}'.format(e.reason))
 	    print(singer, song)
-	    print(error_arg4)
+	    print("Page not found. Trying genius.com now....")
+	    genius_test(singer, song)
 	    if quickswitch != 'packet':
 	    	exit(2)
 	    else:
