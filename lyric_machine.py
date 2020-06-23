@@ -37,9 +37,12 @@ def the_big_function(singer, song):
 	song_clean = re.sub("[^a-z0-9A-Z]", '', song).lower()
 	singer_clean = re.sub("[^a-z0-9A-Z]", '', singer).lower()
 
+	if path.exists('lyric_machine/' + singer_clean) == False:
+		os.mkdir("lyric_machine/" + singer_clean)
+
 	# the path concatenation
 
-	the_lyric_path = 'lyric_machine/' + singer_clean + ' -- ' + song_clean + '.txt'
+	the_lyric_path = 'lyric_machine/' + singer_clean + '/' + singer_clean + ' -- ' + song_clean + '.txt'
 
 	# lyrics were saved previously? type it out and exit
 	if path.exists(the_lyric_path) == True:
