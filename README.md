@@ -1,10 +1,11 @@
 # lyric_machine
-### __This program will create text files with lyrics for you taken from azlyrics.com__
+### __This program will create text files with lyrics for you taken from azlyrics.com or genius.com__
 
-### Lyric Machine v3.x includes:
+### Lyric Machine v4.x includes:
 1. Packet lyrics download
 2. Switches for fast saving
 3. Packet can be written directly in the program
+4. Alternative lyrics source if azlyrics fails
 
 ### How to use? 
 Pass 2 arguments to get the lyrics desired.
