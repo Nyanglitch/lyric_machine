@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import os.path
 from os import path
 import re
-import genius_test
+from genius_test import *
 
 error_arg1 = 'No arguments passed. Try "help" argument.'
 error_arg2 = 'Too many arguments. Try "help" once.'
@@ -31,6 +31,26 @@ if path.exists('lyric_machine') == False:
 
 def the_big_function(singer, song):
 	global quickswitch, error_arg1, error_arg2, error_arg3, error_arg4
+
+	# save or not?
+
+	def output_print(output_switch):
+		if output_switch != 'clear':
+			print(head)
+
+	def keep_output():
+		with open(the_lyric_path, 'w', encoding='utf8') as clear_out_file:
+			clear_out_file.write(head)
+
+	def switch_ask(arg):
+		while arg not in switches:
+			arg = input("Keep lyrics as a text file? (y/n): ").lower()
+		switch_check(arg)
+
+	def switch_check(arg):
+		if arg != 'n':
+			keep_output()
+			exit(0)
 
 	# input formatting
 
@@ -61,28 +81,34 @@ def the_big_function(singer, song):
 	url = 'https://www.azlyrics.com/lyrics/' + singer_clean + '/' + song_clean + '.html'
 
 	try:
-	    conn = urllib.request.urlopen(url)
+		conn = urllib.request.urlopen(url)
 	except urllib.error.HTTPError as e:
-	    print('HTTPError: {}'.format(e.code))
-	    print(singer, song)
-	    print("Page not found. Trying genius.com now....")
-	    genius_test(singer, song)
-	    if quickswitch != 'packet':
-	    	exit(2)
-	    else:
-	    	return
-		    
+		print('HTTPError: {}'.format(e.code))
+		print(singer, song)
+		print("Page not found. Trying genius.com now....")
+		head = genius_func(singer, song)
+		if quickswitch != 'packet':
+			output_print(quickswitch)
+			switch_ask(quickswitch)
+			exit(2)
+		else:
+			keep_output()
+			return
+			
 	except urllib.error.URLError as e:
-	    print('URLError: {}'.format(e.reason))
-	    print(singer, song)
-	    print("Page not found. Trying genius.com now....")
-	    genius_test(singer, song)
-	    if quickswitch != 'packet':
-	    	exit(2)
-	    else:
-	    	return
+		print('URLError: {}'.format(e.reason))
+		print(singer, song)
+		print("Page not found. Trying genius.com now....")
+		head = genius_func(singer, song)
+		if quickswitch != 'packet':
+			output_print(quickswitch)
+			switch_ask(quickswitch)
+			exit(2)
+		else:
+			keep_output()
+			return
 	else:
-	    html = urllib.request.urlopen(url).read()
+		html = urllib.request.urlopen(url).read()
 
 	# beautifulsoup stuff
 	#####################
@@ -90,7 +116,7 @@ def the_big_function(singer, song):
 
 	# kill all script and style elements
 	for script in soup(["script", "style"]):
-	    script.extract()    # rip it out
+		script.extract()	# rip it out
 
 	# get text
 	text = soup.get_text()
@@ -112,25 +138,7 @@ def the_big_function(singer, song):
 	# concatenation to get clear output
 	head = head3 + tail3
 
-	# save or not?
-
-	def output_print(output_switch):
-		if output_switch != 'clear':
-			print(head)
-
-	def keep_output():
-		with open(the_lyric_path, 'w', encoding='utf8') as clear_out_file:
-			clear_out_file.write(head)
-
-	def switch_ask(arg):
-		while arg not in switches:
-			arg = input("Keep lyrics as a text file? (y/n): ").lower()
-		switch_check(arg)
-
-	def switch_check(arg):
-		if arg != 'n':
-			keep_output()
-			exit(0)
+	# ask for save 
 
 	if quickswitch == 'packet':
 		keep_output()
